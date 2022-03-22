@@ -1,20 +1,17 @@
-$project_name=$args[0]
+[CmdletBinding()]
+Param(
+  [Parameter(Mandatory=$true, Position=0)]
+  [string]$ProjectName
+)
 
-if ( $project_name -eq "") {
-    $project_name = "New Project"
-}
-
-poetry new $project_name;
-Set-Location ./$project_name
+poetry new $ProjectName;
+Set-Location $ProjectName
 pyenv local 3.9.6
 poetry env use python
 poetry add --dev pytest-cov pre-commit flake8 mypy isort
 poetry add --dev --allow-prereleases black
-poetry shell
-code .
 
-New-Item pyproject.toml
-Set-Content pyproject.toml "
+Write-Output "
 [tool.black]
 line-length = 79
 target-version = ['py39']
@@ -45,14 +42,10 @@ multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
-line_length = 79
-"
+line_length = 79" >> pyproject.toml
 
 New-Item setup.cfg
-Set-Content setup.cfg "
-create setup.cfg
-
-[flake8]
+Set-Content setup.cfg "[flake8]
 extend-ignore = E203
 
 [mypy]
@@ -67,12 +60,10 @@ disallow_untyped_defs = True
 ignore_missing_imports = True
 
 [mypy-tests.*]
-ignore_errors = True
-"
+ignore_errors = True"
 
 New-Item .pre-commit-config.yaml
-Set-Content .pre-commit-config.yaml "
-repos:
+Set-Content .pre-commit-config.yaml "repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.1.0
     hooks:
@@ -104,7 +95,7 @@ curl -s https://raw.githubusercontent.com/github/gitignore/master/Python.gitigno
 git init -b main
 git add .
 git commit -m 'Initial commit'
-pre-commit install
-pre-commit autoupdate
-pre-commit autoupdate
-pre-commit run --all-files
+poetry run pre-commit install
+poetry run pre-commit autoupdate
+poetry run pre-commit run --all-files
+poetry shell
