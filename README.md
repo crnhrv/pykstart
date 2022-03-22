@@ -1,4 +1,4 @@
-# Python project start-up script
+# Python project quick initialization script
 
 Powershell script that initializes a new Python project with reasonable defaults (with cmdline argument or defaults to 'new project') 
 
